@@ -2,10 +2,11 @@ import openai
 import time
 
 class ChatGPT:
-    def __init__(self, api_key, model_engine="gpt-3.5-turbo", temperature=0.5):
+    def __init__(self, api_key, model_engine="gpt-3.5-turbo", messages=[], temperature=0.5):
         self.api_key = api_key
         self.model_engine = model_engine
         self.temperature = temperature
+        self.messages = messages
         openai.api_key = api_key
         self.chat_log = []
 
@@ -18,10 +19,7 @@ class ChatGPT:
 
     def _request(self, message):
         chat_messages = [
-            *[
-                {"role": role, "content": content}
-                for role, content in self.chat_log
-            ],
+            *self.messages,
             {"role": "user", "content": message},
         ]
         response = openai.ChatCompletion.create(
