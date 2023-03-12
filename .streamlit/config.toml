@@ -1,0 +1,9 @@
+[theme]
+primaryColor="#6EBE7B" # グリーン
+backgroundColor="#F6F6F6" # 明るいグレー
+secondaryBackgroundColor="#E5E5E5" # グレー
+textColor="#222222" # 黒
+font="sans-serif"
+
+[server]
+runOnSave = true
