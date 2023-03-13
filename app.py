@@ -3,22 +3,6 @@ import os
 from dotenv import load_dotenv
 from src.api.chatgpt import ChatGPT
 
-# ボタンがクリックされたときに実行される関数
-def get_response(user_input):
-    return chatbot.send_message(user_input)
-
-def on_button_click():
-    # ユーザーのメッセージを送信し、チャットのログを更新する
-    response = get_response(user_input)
-    
-    # レスポンスを上書きする
-    session_state.response = response
-    
-    # チャットログをリストの先頭に追加する
-    session_state.chat_log_list.insert(0, ("You: " + user_input, "Chatbot: " + response))
-    
-    return response
-
 
 # .envファイルから環境変数をロードする
 load_dotenv()
@@ -30,6 +14,12 @@ MODEL_ENGINE = "gpt-3.5-turbo"
 # ページのタイトルを設定する
 st.set_page_config(page_title="Chatbot App")
 
+
+#
+# SessionStateを使用して状態を管理する
+#
+
+messages = []
 
 if 'message_count' not in st.session_state:
     st.session_state.message_count = 1
@@ -47,7 +37,6 @@ with btn_col2:
         st.session_state.messages.pop()
 st.caption("---")
 
-messages = []
 for i in range(st.session_state.message_count):
     col1, col2 = st.columns(2)
     with col1:
@@ -60,10 +49,15 @@ for i in range(st.session_state.message_count):
             message = st.text_input("", "", key=f"message_{i}")
         st.caption("Message")
     messages.append({'role': role, 'content': message})
+
+# プログラム側で初期値を規定する場合は、以下のコメントアウトを外す
+# messages = [{'role': 'system', 'content': 'あなたは親身に回答してくれるチャットボットです。'}]
+
 st.session_state.messages = messages
+st.write(messages)
 
 
-st.write(st.session_state.messages)
+
 
 # Chat GPT インスタンスの作成
 chatbot = ChatGPT(api_key=API_KEY, model_engine=MODEL_ENGINE, messages=messages)
@@ -78,6 +72,22 @@ st.title('ユーザー入力文')
 
 # ユーザーのメッセージを入力するテキストボックス
 user_input = st.text_input("Enter your message")
+
+# ボタンがクリックされたときに実行される関数
+def get_response(user_input):
+    return chatbot.send_message(user_input)
+
+def on_button_click():
+    # ユーザーのメッセージを送信し、チャットのログを更新する
+    response = get_response(user_input)
+    
+    # レスポンスを上書きする
+    session_state.response = response
+    
+    # チャットログをリストの先頭に追加する
+    session_state.chat_log_list.insert(0, ("You: " + user_input, "Chatbot: " + response))
+    
+    return response
 
 
 # ボタンの作成とクリックイベントの設定
